@@ -1,0 +1,27 @@
+Filetype plugin for vimscript
+=============================
+
+This is a filetype plugin for vimscript files that specifies some (quite
+personal) settings additionally to the default vimscript filetype plugin.
+
+
+Folding
+-------
+
+A `foldexp` is defined that folds vimscript functions as level 1 and
+leading http://github.com/google/vimdoc[vimdoc] comment blocks as level 2.
+
+Additionally a custom foldtext is specified to display the first line of a
+folded vimdoc comment block.
+
+
+Sourcing vimscript
+------------------
+
+Functions and mappings are provided to source the current vimscript file or
+the visually selected lines:
+
+- `vimscript#run()`
+- `nnoremap go`
+- `vnoremap go`
+
