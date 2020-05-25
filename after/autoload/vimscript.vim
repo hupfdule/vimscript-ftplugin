@@ -5,10 +5,17 @@
 " entries. The first being the first line to execute, the second being the
 " last line to execute.
 "
-" If the optional [range] is /not/ given the lines in the visual selection
-" are executed. If no visual selection is present the current line is
-" executed.
-function vimscript#run(...) range abort
+" If the optional [range] is /not/ given the whole buffer is sources.
+" This requires writing the file first. A warning message is displayed if
+" the current buffer is modified.
+"
+" FIXME:
+" To allow sourcing a modified file without having to write it first, it
+" needs to be written to a temporary file and that one is executed.
+" That still doesn't work for autoload scripts as their function names need
+" to match the file name. Therefore the temporary name should resemble the
+" autoload name
+function! vimscript#run(...) range abort
   if a:0 > 1
     throw 'VimscriptFT001: Only one optional parameter [range] is allowed, but ' . a:0 . ' were given: '
           \ . string(a:000)
@@ -25,10 +32,13 @@ function vimscript#run(...) range abort
 
   if a:0 ==# 1
     let l:lines = getline(a:1[0], a:1[1])
+    call execute(s:preprocess(l:lines), '')
   else
-    let l:lines = getline(a:firstline, a:lastline)
+    if &modified
+      echohl WarningMsg | echo "Current buffer is modified! :write it to execute the current content." | echohl None
+    endif
+    source %
   endif
-  call execute(s:preprocess(l:lines), '')
 endfunction
 
 
@@ -39,7 +49,7 @@ endfunction
 " Taken from https://vi.stackexchange.com/a/25020/21417
 "
 " @param {script} a list with the lines of code to execute
-function s:preprocess(script)
+function! s:preprocess(script)
     if stridx(&cpo, 'C') < 0
         let [l:curr, l:last] = [1, len(a:script) - 1]
         while l:curr <= l:last
@@ -61,3 +71,9 @@ function s:preprocess(script)
     return a:script
 endfunction
 
+function! s:source(first, last) range
+  let l:tmpfile = tempname()
+  call writefile(get(a:first, a:last), l:tmpfile)
+  execute "source " . l:tmpfile
+  call delete(l:tmpfile)
+endfunction
