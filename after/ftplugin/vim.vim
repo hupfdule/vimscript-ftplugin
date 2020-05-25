@@ -1,7 +1,7 @@
 setlocal foldexpr=folding#foldExpr(v:lnum)
 setlocal foldtext=folding#foldText()
 setlocal foldmethod=expr
-setlocal fillchars=fold:\
+setlocal fillchars=fold:\                                   " space character.
 " Specify typical vimdoc comment chars
 setlocal comments=s:\"\",m:\",e:\",:\"
 
