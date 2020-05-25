@@ -14,6 +14,14 @@ leading http://github.com/google/vimdoc[vimdoc] comment blocks as level 2.
 Additionally a custom foldtext is specified to display the first line of a
 folded vimdoc comment block.
 
+A command `DebugFoldExpr` and a corresponding function `vim#debug_foldexpr`
+is provided to debug custom foldexpressions. This only works for
+foldexpressions that are simple function calls (the 'foldexpr' must match
+'.\+(v:lnum)$'). It displays the line number, the result of applying the
+foldexpression and the actual content of each line in the current buffer.
+This command / function also displays any error when evaluating the
+'foldexpr'. Otherwise such errors are swallowed by vim.
+
 
 Sourcing vimscript
 ------------------
@@ -24,4 +32,3 @@ the visually selected lines:
 - `vimscript#run()`
 - `nnoremap go`
 - `vnoremap go`
-
