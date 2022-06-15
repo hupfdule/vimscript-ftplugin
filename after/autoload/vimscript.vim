@@ -15,6 +15,9 @@
 " That still doesn't work for autoload scripts as their function names need
 " to match the file name. Therefore the temporary name should resemble the
 " autoload name
+" FIXME:
+" At the moment we don't need 0 arguments. We always provide a range. We
+" could get rid of some code paths
 function! vimscript#run(...) range abort
   if a:0 > 1
     throw 'VimscriptFT001: Only one optional parameter [range] is allowed, but ' . a:0 . ' were given: '
@@ -31,8 +34,9 @@ function! vimscript#run(...) range abort
   endif
 
   if a:0 ==# 1
-    let l:lines = getline(a:1[0], a:1[1])
-    call execute(s:preprocess(l:lines), '')
+    call s:source(a:1[0], a:1[1])
+"    let l:lines = getline(a:1[0], a:1[1])
+"    call execute(s:preprocess(l:lines), '')
   else
     if &modified
       echohl WarningMsg | echo "Current buffer is modified! :write it to execute the current content." | echohl None
@@ -71,9 +75,12 @@ function! s:preprocess(script)
     return a:script
 endfunction
 
-function! s:source(first, last) range
-  let l:tmpfile = tempname()
-  call writefile(get(a:first, a:last), l:tmpfile)
-  execute "source " . l:tmpfile
-  call delete(l:tmpfile)
+function! s:source(first, last) range abort
+  let l:tmpdir = tempname()
+  call mkdir(l:tmpdir)
+  let l:filename = expand('%:t')
+  call writefile(getline(a:first, a:last), l:tmpdir . '/' . l:filename)
+  echom l:tmpdir . '/' . l:filename
+  execute "source " . l:tmpdir . '/' . l:filename
+  call delete(l:tmpdir, 'rf')
 endfunction

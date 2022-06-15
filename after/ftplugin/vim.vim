@@ -20,6 +20,6 @@ endif
 
 
 "" Execute the whole current buffer.
-nnoremap <buffer> go :call vimscript#run()<cr>
+nnoremap <buffer> go :call vimscript#run([0, line('$')])<cr>
 "" Execute the visually selected lines.
 vnoremap <buffer> go :<c-u> call vimscript#run([line("'<"), line("'>")])<cr>
